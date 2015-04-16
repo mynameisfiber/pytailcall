@@ -27,7 +27,6 @@ def fix_absolute_jumps(opcodes, offsets):
             if op in absolute_jump_opcodes:
                 jump_to = ord(opcodes[i+1])
                 offset = sum(off[1] for off in offsets if off[0] <= jump_to)
-                print "changing {} => {}".format(jump_to, jump_to+offset)
                 new_opcodes += opcodes[i] + chr(ord(opcodes[i+1])+offset) + opcodes[i+2]
             else:
                 new_opcodes += opcodes[i:i+3]
@@ -44,7 +43,7 @@ def internal_loop(fxn):
     jump_offsets = []
     for fxn_load, fxn_call, cur_num_args in find_tail_call(fxn):
         if cur_num_args > arg_count:
-            print "Cannot tail call optimize functions with variadic parameters"
+            print "Cannot tail call optimize tail call with variadic parameters: opcode ", fxn_call
             continue
         # create the tuple expansion of the first `cur_num_args` arguments to
         # the function
