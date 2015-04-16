@@ -3,8 +3,10 @@ import sys
 
 import true_recursion
 import pure_python
+import partial_func
 import return_tuple
 import internal_loop
+import unrecursed
 
 
 def benchmark(name, N, number=250, baseline=None):
@@ -16,7 +18,7 @@ def benchmark(name, N, number=250, baseline=None):
     return t
 
 if __name__ == "__main__":
-    methods = (pure_python, return_tuple, internal_loop)
+    methods = (unrecursed, pure_python, partial_func, return_tuple, internal_loop)
 
     print("Testing all functions work")
     real_value = true_recursion.fib(50)

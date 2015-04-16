@@ -79,9 +79,12 @@ def internal_loop(fxn):
     last_idx = 0
     jump_offsets = []
     blocks = 0
-    for fxn_load, fxn_call, cur_num_args in find_tail_call(fxn):
+    for fxn_load, fxn_call, cur_num_args, cur_num_kw_args in find_tail_call(fxn):
         if cur_num_args > arg_count:
             print "Cannot tail call optimize tail call with variadic parameters: opcode ", fxn_call
+            continue
+        if cur_num_kw_args != 0:
+            print "Current tail call optimization does not support keyword arguments in recursive call"
             continue
         # create the tuple expansion of the first `cur_num_args` arguments to
         # the function

@@ -8,7 +8,10 @@ def replace_recurse(fxn):
     # none_loc should always be 0, but check just incase
     none_loc = fco.co_consts.index(None)
     NULL = chr(0)
-    for fxn_load, fxn_call, num_args in find_tail_call(fxn):
+    for fxn_load, fxn_call, num_args, num_kw_args in find_tail_call(fxn):
+        if num_kw_args != 0:
+            print "Current tail call optimization does not support keyword arguments in recursive call"
+            continue
         # first delete the loading of the current function then replace the old
         # function call with building a new tuple using the function arguments
         # and end it with a magic None value

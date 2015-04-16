@@ -12,8 +12,9 @@ def find_tail_call(fxn):
         elif cur_code == opcode.opmap['CALL_FUNCTION'] and fxn_loaded:
             fxn_loaded_idx, is_self = fxn_loaded.pop()
             if is_self and opcodes[i+3] == opcode.opmap['RETURN_VALUE']:
-                num_args = opcodes[i+1] + opcodes[i+2]
-                yield (fxn_loaded_idx, i, num_args)
+                num_pos_args = opcodes[i+1]
+                num_kw_args = opcodes[i+2]
+                yield (fxn_loaded_idx, i, num_pos_args, num_kw_args)
         if cur_code < opcode.HAVE_ARGUMENT: #90, as mentioned earlier
             i += 1
         else:
