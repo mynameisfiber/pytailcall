@@ -1,15 +1,11 @@
 import timeit
 import sys
 
+import true_recursion
 import pure_python
 import return_tuple
 import internal_loop
 
-def fib(i, current = 0, next = 1):
-  if i == 0:
-    return current
-  else:
-    return fib(i - 1, next, current + next)
 
 def benchmark(name, N, number=250, baseline=None):
     t = min(timeit.repeat(name + ".fib(%d)" % N, setup="import " + name, number=number, repeat=5))
@@ -23,7 +19,7 @@ if __name__ == "__main__":
     methods = (pure_python, return_tuple, internal_loop)
 
     print("Testing all functions work")
-    real_value = fib(50)
+    real_value = true_recursion.fib(50)
     for m in methods:
         if m.fib(50) != real_value:
             print "{} failed".format(m.__name__)
