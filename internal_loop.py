@@ -134,6 +134,6 @@ def internal_loop(fxn):
 def fib(i, current = 0, next = 1):
     if i > 0:
         return fib(i - 1, next, current + next)
-    elif i == 0:
+    else:
         return current
 
