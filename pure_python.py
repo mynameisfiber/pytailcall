@@ -3,7 +3,7 @@ from http://lambda-the-ultimate.org/node/1331
 """
 import sys
 
-class TailRecurseException(Exception):
+class TailRecurseException:
   def __init__(self, args, kwargs):
     self.args = args
     self.kwargs = kwargs
@@ -27,7 +27,7 @@ def tail_call_optimized(g):
       while 1:
         try:
           return g(*args, **kwargs)
-        except TailRecurseException as e:
+        except TailRecurseException, e:
           args = e.args
           kwargs = e.kwargs
   func.__doc__ = g.__doc__

@@ -1,6 +1,7 @@
 from utils import find_tail_call
 import opcode
 
+
 absolute_jump_opcodes = set((
     opcode.opmap['JUMP_ABSOLUTE'], 
     opcode.opmap['POP_JUMP_IF_TRUE'], 
@@ -8,7 +9,6 @@ absolute_jump_opcodes = set((
     opcode.opmap['JUMP_IF_TRUE_OR_POP'], 
     opcode.opmap['JUMP_IF_FALSE_OR_POP'], 
 ))
-
 
 def fix_absolute_jumps(opcodes, offset):
     new_opcodes = ""
@@ -26,12 +26,12 @@ def fix_absolute_jumps(opcodes, offset):
             i += 3
     return new_opcodes
             
-            
 def internal_loop(fxn):
     fco = fxn.__code__
     opcodes = fco.co_code
     arg_count = fco.co_argcount
     opcode_offset = 0
+    NULL = chr(0)
     for fxn_load, fxn_call, cur_num_args in find_tail_call(fxn):
         if cur_num_args > arg_count:
             print "Cannot tail call optimize functions with variadic parameters"
@@ -41,7 +41,7 @@ def internal_loop(fxn):
         store_fast_args = "".join([
             chr(opcode.opmap['STORE_FAST']) + \
             chr(var_idx) + \
-            chr(opcode.opmap['STOP_CODE'])
+            NULL
             for var_idx in xrange(cur_num_args)
         ])
         prev_opcode_lenth = len(opcodes)
@@ -49,27 +49,27 @@ def internal_loop(fxn):
                   opcodes[fxn_load+3:fxn_call] + \
                   chr(opcode.opmap['BUILD_TUPLE']) + \
                   chr(cur_num_args) + \
-                  chr(opcode.opmap['STOP_CODE']) + \
+                  NULL + \
                   chr(opcode.opmap['UNPACK_SEQUENCE']) + \
                   chr(cur_num_args) + \
-                  chr(opcode.opmap['STOP_CODE']) + \
+                  NULL + \
                   store_fast_args + \
                   opcodes[fxn_call+8:] + \
                   chr(opcode.opmap['JUMP_ABSOLUTE']) + \
                   chr(0) + \
-                  chr(opcode.opmap['STOP_CODE'])
+                  NULL
         opcode_offset = len(opcodes) - prev_opcode_lenth
 
     # we are adding 9 opcodes but must loop until the last 3
     # opcodes, ergo the offset of 6
     opcodes = chr(opcode.opmap['SETUP_LOOP']) + \
               chr(len(opcodes)) + \
-              chr(opcode.opmap['STOP_CODE']) + \
+              NULL + \
               fix_absolute_jumps(opcodes, 3) + \
               chr(opcode.opmap['POP_BLOCK']) + \
               chr(opcode.opmap['LOAD_CONST']) + \
               chr(0) + \
-              chr(opcode.opmap['STOP_CODE']) + \
+              NULL + \
               chr(opcode.opmap['RETURN_VALUE'])
 
     fxn.__code__ = type(fco)(

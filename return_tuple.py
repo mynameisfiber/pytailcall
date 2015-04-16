@@ -6,16 +6,17 @@ def replace_recurse(fxn):
     opcodes = fco.co_code
     # none_loc should always be 0, but check just incase
     none_loc = fco.co_consts.index(None)
+    NULL = chr(0)
     for fxn_load, fxn_call, num_args in find_tail_call(fxn):
         # first delete the loading of the current function
         opcodes = opcodes[:fxn_load] + \
                   opcodes[fxn_load+3:fxn_call] + \
                   chr(opcode.opmap['LOAD_CONST']) + \
                   chr(none_loc) + \
-                  chr(opcode.opmap['STOP_CODE']) + \
+                  NULL + \
                   chr(opcode.opmap['BUILD_TUPLE']) + \
                   chr(num_args + 1) + \
-                  chr(opcode.opmap['STOP_CODE']) + \
+                  NULL + \
                   opcodes[fxn_call+3:]
 
     fxn.__code__ = type(fco)(
