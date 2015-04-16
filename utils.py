@@ -19,3 +19,22 @@ def find_tail_call(fxn):
         else:
             i += 3
 
+def update_function_code(fxn, code):
+    fco = fxn.__code__
+    fxn.__code__ = type(fco)(
+        fco.co_argcount,
+        fco.co_nlocals,
+        fco.co_stacksize,
+        fco.co_flags,
+        bytes(code),
+        fco.co_consts,
+        fco.co_names,
+        fco.co_varnames,
+        fco.co_filename,
+        fco.co_name,
+        fco.co_firstlineno,
+        fco.co_lnotab,
+        fco.co_freevars,
+        fco.co_cellvars
+    )
+    return fxn
