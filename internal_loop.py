@@ -41,11 +41,11 @@ def fix_absolute_jumps(opcodes, offsets):
         else:
             if op in absolute_jump_opcodes:
                 jump_to = ord(opcodes[i+1])
-                offset = sum(off[1] for off in offsets if off[0] <= jump_to)
+                offset = sum(off[1] for off in offsets if off[0] < jump_to)
                 new_opcodes += opcodes[i] + chr(ord(opcodes[i+1])+offset) + opcodes[i+2]
             elif op in relative_jump_opcodes:
                 jump_to = ord(opcodes[i+1])
-                offset = sum(off[1] for off in offsets if i < off[0] <= jump_to)
+                offset = sum(off[1] for off in offsets if i < off[0] < jump_to)
                 new_opcodes += opcodes[i] + chr(ord(opcodes[i+1])+offset) + opcodes[i+2]
             else:
                 new_opcodes += opcodes[i:i+3]
