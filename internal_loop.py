@@ -74,7 +74,7 @@ def internal_loop(fxn):
     fco = fxn.__code__
     opcodes = fco.co_code
     arg_count = fco.co_argcount
-    NULL = chr(0)
+    ZERO = chr(0)
     new_opcodes = ""
     last_idx = 0
     jump_offsets = []
@@ -88,12 +88,12 @@ def internal_loop(fxn):
             continue
         # create the tuple expansion of the first `cur_num_args` arguments to
         # the function
-        store_fast_args = "".join([
+        store_fast_args = "".join(
             chr(opcode.opmap['STORE_FAST']) + \
             chr(var_idx) + \
-            NULL
+            ZERO
             for var_idx in xrange(cur_num_args)
-        ])
+        )
 
         # load up actual code before the recursion point
         new_opcodes += opcodes[last_idx:fxn_load]
@@ -107,23 +107,37 @@ def internal_loop(fxn):
         # then gets unpacked into co_names which holds the current function
         # parameters and we finally do an absolute jump to the beginning of the
         # function to start it all over again!
-        # NOTE: offset is 5 here because we add 9 extra opcodes, but then
-        # remove 4 when updating `last_idx`
         # NOTE: we must also keep track of the size of the block stack so that
         # we can pop back into the original frame of the function
+        if cur_num_args == 1:
+            pass
+        elif cur_num_args == 2:
+            jump_offsets.append((fxn_call, 1))
+            new_opcodes += chr(opcode.opmap['ROT_TWO'])
+        elif cur_num_args == 3:
+            jump_offsets.append((fxn_call, 2))
+            new_opcodes += chr(opcode.opmap['ROT_THREE']) + \
+                           chr(opcode.opmap['ROT_TWO'])
+        else:
+            jump_offsets.append((fxn_call, 6))
+            new_opcodes += chr(opcode.opmap['BUILD_TUPLE']) + \
+                           chr(cur_num_args) + \
+                           ZERO + \
+                           chr(opcode.opmap['UNPACK_SEQUENCE']) + \
+                           chr(cur_num_args) + \
+                           ZERO
+
+        jump_offsets.append((fxn_call, len(store_fast_args)))
+        new_opcodes += store_fast_args
+
+        # NOTE: offset is -1 here because we add 3 extra opcodes, but then
+        # remove 4 when updating `last_idx`
         blocks += count_blocks(opcodes[last_idx:fxn_call])
-        jump_offsets.append((fxn_call, 5 + len(store_fast_args) + blocks))
-        new_opcodes += chr(opcode.opmap['BUILD_TUPLE']) + \
-                       chr(cur_num_args) + \
-                       NULL + \
-                       chr(opcode.opmap['UNPACK_SEQUENCE']) + \
-                       chr(cur_num_args) + \
-                       NULL + \
-                       store_fast_args
+        jump_offsets.append((fxn_call, blocks - 1))
         new_opcodes += chr(opcode.opmap['POP_BLOCK']) * blocks
         new_opcodes += chr(opcode.opmap['JUMP_ABSOLUTE']) + \
                        chr(0) + \
-                       NULL
+                       ZERO
         last_idx = fxn_call+4
     new_opcodes += opcodes[last_idx:]
     new_opcodes = fix_absolute_jumps(new_opcodes, jump_offsets)

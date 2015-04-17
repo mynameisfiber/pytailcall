@@ -27,6 +27,11 @@ if __name__ == "__main__":
             print "{} failed".format(m.__name__)
             sys.exit()
 
+    print("Testing with very small N so we can see overheads")
+    baseline = benchmark("true_recursion", 5)
+    for m in methods:
+        benchmark(m.__name__, 5, baseline=baseline)
+
     print("Testing with small N so we can compare with real recursion")
     baseline = benchmark("true_recursion", 750)
     for m in methods:
