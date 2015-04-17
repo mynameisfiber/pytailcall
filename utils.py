@@ -15,7 +15,7 @@ def find_tail_call(fxn):
                 num_pos_args = opcodes[i+1]
                 num_kw_args = opcodes[i+2]
                 yield (fxn_loaded_idx, i, num_pos_args, num_kw_args)
-        if cur_code < opcode.HAVE_ARGUMENT: #90, as mentioned earlier
+        if cur_code < opcode.HAVE_ARGUMENT:
             i += 1
         else:
             i += 3
