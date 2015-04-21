@@ -1,4 +1,5 @@
 import opcode
+from copy import deepcopy
 
 def find_tail_call(fxn):
     i = 0
@@ -22,7 +23,7 @@ def find_tail_call(fxn):
 
 def update_function_code(fxn, code):
     fco = fxn.__code__
-    fxn.__code__ = type(fco)(
+    new_code = type(fco)(
         fco.co_argcount,
         fco.co_nlocals,
         fco.co_stacksize,
@@ -38,4 +39,9 @@ def update_function_code(fxn, code):
         fco.co_freevars,
         fco.co_cellvars
     )
-    return fxn
+    new_fxn = type(fxn)(
+        new_code,
+        fxn.func_globals,
+        fxn.func_name,
+    )
+    return new_fxn

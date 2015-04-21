@@ -1,27 +1,27 @@
-from internal_loop import internal_loop
+from internal_loop import tail_optimize
 
 
-@internal_loop
+@tail_optimize
 def reverse_string(normal, reverse=""):
     try:
         return reverse_string(normal[:-1], reverse + normal[-1])
     except IndexError:
         return reverse
 
-@internal_loop
+@tail_optimize
 def gcd(a, b):
     remainder = a % b
     if remainder:
         return gcd(b, remainder)
     return b
 
-@internal_loop
+@tail_optimize
 def modulo(val, div):
     if val < div:
         return val
     return modulo(val - div, div)
 
-@internal_loop
+@tail_optimize
 def string_merge(a, b, merge=""):
     if not a:
         return merge + b
@@ -32,13 +32,13 @@ def string_merge(a, b, merge=""):
     else:
         return string_merge(a[1:], b, merge + a[0])
 
-@internal_loop
+@tail_optimize
 def to_binary(n, result=""):
     if n < 2:
         return str(n) + result
     return to_binary(n/2, str(n%2) + result)
 
-@internal_loop
+@tail_optimize
 def collatz(n, i=0):
     if n == 1:
         return i

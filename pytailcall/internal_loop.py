@@ -1,5 +1,6 @@
-from utils import find_tail_call, update_function_code
 import opcode
+from functools import wraps
+from utils import find_tail_call, update_function_code
 
 
 absolute_jump_opcodes = set((
@@ -25,11 +26,14 @@ block_setup_opcodes = set((
     opcode.opmap['SETUP_FINALLY'], 
 ))
 
-def fix_absolute_jumps(opcodes, offsets):
+def fix_absolute_jumps(opcodes, offsets, 
+        absolute_jump_opcodes = absolute_jump_opcodes, 
+        relative_jump_opcodes = relative_jump_opcodes):
     """
     When we mess with the bytecode and change offsets, any jumps that use
-    absolute bytecode positions will be messed up.  This will go through and
-    add relevant offsets to any absolute bytecode positions.
+    absolute bytecode positions or relative jumps through our changes will be
+    messed up.  This will go through and add relevant offsets to any absolute
+    bytecode positions.
     """
     new_opcodes = ""
     i = 0
@@ -52,7 +56,7 @@ def fix_absolute_jumps(opcodes, offsets):
             i += 3
     return new_opcodes
 
-def count_blocks(opcodes):
+def count_blocks(opcodes, block_setup_opcodes = block_setup_opcodes):
     """
     Counts the net number of blocks at the end of running the opcodes
     """
@@ -70,7 +74,7 @@ def count_blocks(opcodes):
             i += 3
     return blocks
             
-def internal_loop(fxn):
+def tail_optimize(fxn):
     fco = fxn.__code__
     opcodes = fco.co_code
     arg_count = fco.co_argcount
@@ -81,7 +85,7 @@ def internal_loop(fxn):
     blocks = 0
     for fxn_load, fxn_call, cur_num_args, cur_num_kw_args in find_tail_call(fxn):
         if cur_num_args > arg_count:
-            print "Cannot tail call optimize tail call with variadic parameters: opcode ", fxn_call
+            print "Cannot tail call optimize tail call with variadic parameters (ie: *args)"
             continue
         if cur_num_kw_args != 0:
             print "Current tail call optimization does not support keyword arguments in recursive call"
@@ -120,10 +124,10 @@ def internal_loop(fxn):
         last_idx = fxn_call+4
     new_opcodes += opcodes[last_idx:]
     new_opcodes = fix_absolute_jumps(new_opcodes, jump_offsets)
-    fxn = update_function_code(fxn, new_opcodes)
-    return fxn
+    new_fxn = update_function_code(fxn, new_opcodes)
+    return wraps(fxn)(new_fxn)
 
-@internal_loop
+@tail_optimize
 def fib(i, current = 0, next = 1):
     if i > 0:
         return fib(i - 1, next, current + next)

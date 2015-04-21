@@ -22,3 +22,9 @@ partial_func    : 5.73617935181 ms/call
 return_tuple    : 5.29965877533 ms/call 
 internal_loop   : 1.74531936646 ms/call 
 ```
+
+Useful references
+
+- http://www.jonathon-vogel.com/posts/patching_function_bytecode_with_python/
+- https://docs.python.org/2/library/dis.html
+- http://unpyc.sourceforge.net/Opcodes.html

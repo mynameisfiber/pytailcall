@@ -1,16 +1,18 @@
 import timeit
 import sys
 
-import true_recursion
-import pure_python
-import partial_func
-import return_tuple
 import internal_loop
-import unrecursed
+from experiments import true_recursion
+from experiments import pure_python
+from experiments import partial_func
+from experiments import return_tuple
+from experiments import unrecursed
 
 
 def benchmark(name, N, number=250, baseline=None):
-    t = min(timeit.repeat(name + ".fib(%d)" % N, setup="import " + name, number=number, repeat=5))
+    name = name.split('.')[-1]
+    import_stmt = "from __main__ import {}".format(name)
+    t = min(timeit.repeat(name + ".fib(%d)" % N, setup=import_stmt, number=number, repeat=5))
     speedup = ""
     if baseline:
         speedup = "({}x speedup)".format(baseline / t)
@@ -28,7 +30,7 @@ if __name__ == "__main__":
             sys.exit()
 
     print("Testing with very small N so we can see overheads")
-    baseline = benchmark("true_recursion", 5)
+    baseline = benchmark(true_recursion.__name__, 5)
     for m in methods:
         benchmark(m.__name__, 5, baseline=baseline)
 
