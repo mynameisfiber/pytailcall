@@ -75,6 +75,11 @@ def count_blocks(opcodes, block_setup_opcodes = block_setup_opcodes):
     return blocks
             
 def tail_optimize(fxn):
+    """
+    Decorator to perform tail recursion optimization on the given function.  It
+    does this by changing the functions bytecode in order to turn it into an
+    iterative solver.
+    """
     fco = fxn.__code__
     opcodes = fco.co_code
     arg_count = fco.co_argcount

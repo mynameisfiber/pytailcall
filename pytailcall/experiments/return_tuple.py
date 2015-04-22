@@ -1,5 +1,6 @@
-from utils import find_tail_call, update_function_code
 import opcode
+from functools import wraps
+from utils import find_tail_call, update_function_code
 
 
 def replace_recurse(fxn):
@@ -24,11 +25,12 @@ def replace_recurse(fxn):
                   chr(num_args + 1) + \
                   NULL + \
                   opcodes[fxn_call+3:]
-    fxn = update_function_code(fxn, opcodes)
+    new_fxn = update_function_code(fxn, opcodes)
+    @wraps(fxn)
     def wrapper(*args):
         repeat = True
         while repeat:
-            result = fxn(*args)
+            result = new_fxn(*args)
             # if the returned value was a tuple with a None as the last value,
             # we know it was the magic value returned form our hacked bytecode.
             # This tuple actually contains the new arguments to the "recursed"

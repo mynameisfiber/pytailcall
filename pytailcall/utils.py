@@ -43,5 +43,7 @@ def update_function_code(fxn, code):
         new_code,
         fxn.func_globals,
         fxn.func_name,
+        fxn.func_defaults,
+        fxn.func_closure
     )
     return new_fxn
