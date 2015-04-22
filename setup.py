@@ -9,6 +9,6 @@ setup(
     author='Micha Gorelick',
     author_email='mynameisfiber@gmail.com',
     url='http://github.com/mynameisfiber/pytailcall/',
-    packages=['pytailcall'],
+    packages=['pytailcall', 'pytailcall.experiments'],
 )
 

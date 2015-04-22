@@ -131,11 +131,3 @@ def tail_optimize(fxn):
     new_opcodes = fix_absolute_jumps(new_opcodes, jump_offsets)
     new_fxn = update_function_code(fxn, new_opcodes)
     return wraps(fxn)(new_fxn)
-
-@tail_optimize
-def fib(i, current = 0, next = 1):
-    if i > 0:
-        return fib(i - 1, next, current + next)
-    else:
-        return current
-

@@ -1,9 +1,9 @@
 import opcode
 from functools import wraps
-from utils import find_tail_call, update_function_code
+from ..utils import find_tail_call, update_function_code
 
 
-def replace_recurse(fxn):
+def tail_optimize(fxn):
     fco = fxn.__code__
     opcodes = fco.co_code
     # none_loc should always be 0, but check just incase
@@ -41,10 +41,3 @@ def replace_recurse(fxn):
                 repeat = False
         return result
     return wrapper
-
-@replace_recurse
-def fib(i, current = 0, next = 1):
-  if i == 0:
-    return current
-  else:
-    return fib(i - 1, next, current + next)

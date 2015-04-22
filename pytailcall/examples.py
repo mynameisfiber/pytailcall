@@ -1,27 +1,40 @@
-from internal_loop import tail_optimize
-
-
-@tail_optimize
+reverse_string_params = (
+    ("asdf",),
+    ("",),
+    ("qwertyuiop" * 100,),
+)
 def reverse_string(normal, reverse=""):
     try:
         return reverse_string(normal[:-1], reverse + normal[-1])
     except IndexError:
         return reverse
 
-@tail_optimize
+gcd_params = (
+    (5,3),
+    (436523451,7),
+    (23305295513, 3)
+)
 def gcd(a, b):
     remainder = a % b
     if remainder:
         return gcd(b, remainder)
     return b
 
-@tail_optimize
+modulo_params = (
+    (5, 3),
+    (43652, 7),
+    (2330523, 7)
+)
 def modulo(val, div):
     if val < div:
         return val
     return modulo(val - div, div)
 
-@tail_optimize
+string_merge_params = (
+    ("qwertyuiop", "asdfghkjl"),
+    ("zxcvbnm", "zxcvbnm"),
+    ("acegik"*100, "bdfhjl"*100)
+)
 def string_merge(a, b, merge=""):
     if not a:
         return merge + b
@@ -32,13 +45,21 @@ def string_merge(a, b, merge=""):
     else:
         return string_merge(a[1:], b, merge + a[0])
 
-@tail_optimize
+to_binary_params = (
+    (5,),
+    (53423451,),
+    (2394871865782648123658023746415,),
+)
 def to_binary(n, result=""):
     if n < 2:
         return str(n) + result
     return to_binary(n/2, str(n%2) + result)
 
-@tail_optimize
+collatz_params = (
+    (635,),
+    (83451,),
+    (9780657631,),
+)
 def collatz(n, i=0):
     if n == 1:
         return i
@@ -47,11 +68,25 @@ def collatz(n, i=0):
     else:
         return collatz(n*3+1, i+1)
 
+fib_params = (
+    (5,),
+    (500,),
+    (5000,),
+    (50000,),
+)
+def fib(i, current = 0, next = 1):
+  if i == 0:
+    return current
+  else:
+    return fib(i - 1, next, current + next)
 
-if __name__ == "__main__":
-    print "reverse('qwertyuiop') = ", reverse_string('qwertyuiop')
-    print "gcd(123,543) = ", gcd(123,543)
-    print "modulo(15, 5) = ", modulo(15, 5)
-    print "string_merge('abdeg', 'dfij') = ", string_merge('abdeg', 'dfij')
-    print "to_binary(50) = ", to_binary(50)
-    print "collatz(502423423) = ", collatz(502423423)
+
+examples = (
+    (reverse_string, reverse_string_params),
+    (gcd, gcd_params),
+    (modulo, modulo_params),
+    (string_merge, string_merge_params),
+    (to_binary, to_binary_params),
+    (collatz, collatz_params),
+    (fib, fib_params),
+)
