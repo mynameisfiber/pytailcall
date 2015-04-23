@@ -41,7 +41,7 @@ tail recursion,
 ```
 def factorial(N, result=1):
     if N == 1:
-        return 1
+        return result
     return factorial(N-1, N*result)
 ```
 
