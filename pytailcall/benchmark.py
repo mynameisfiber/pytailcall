@@ -61,7 +61,7 @@ if __name__ == "__main__":
     print("Running all examples")
     methods = [("native", native)] + [
         (m.__name__.split('.')[-1], m.tail_optimize) 
-        for m in (partial_func, return_tuple, internal_loop)
+        for m in (internal_loop, partial_func, return_tuple)
     ]
     header = "| {:16s} | ".format("example") + \
              " | ".join(["{:16s}".format(name) for name, _ in methods]) + \
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                 fxn = m(ex)
                 try:
                     t = benchmark(fxn, params, baseline=baseline, name=name, number=5, verbose=False)
-                    timings.append("{:13.8f} ms".format(t * 1000))
+                    timings.append("{:13.4f} us".format(t * 1000000))
                 except RuntimeError:
                     timings.append("{:>16s}".format("recursion errror"))
             print "| " + " | ".join(timings) + " |"
