@@ -19,6 +19,8 @@ return_tuple    : 2.64175891876 ms/call
 internal_loop   : 0.862798690796 ms/call
 ```
 
+![][benchmark.png]
+
 | example          | native           | partial_func     | return_tuple     | internal_loop    |
 | ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
 | reverse_string_0 |    0.01001358 ms |    0.02193451 ms |    0.01692772 ms |    0.00786781 ms |

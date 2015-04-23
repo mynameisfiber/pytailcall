@@ -1,6 +1,8 @@
 import timeit
 import sys
 from functools import partial
+from collections import OrderedDict
+import numpy as np
 
 import internal_loop
 import examples
@@ -69,17 +71,50 @@ if __name__ == "__main__":
     print header
     print "| " + " | ".join("-"*16 for i in xrange(len(methods) + 1)) + " |"
 
+    results = OrderedDict()
+    benchmark_names = []
     for ex, ex_params in examples.examples:
         for i, params in enumerate(ex_params):
-            timings = ["{:16s}".format(ex.__name__.split('.')[-1] + "_" + str(i))]
+            ex_name = ex.__name__.split('.')[-1] + "_" + str(i)
+            benchmark_names.append(ex_name)
+            timings = ["{:16s}".format(ex_name)]
             for name, m in methods:
                 fxn = m(ex)
+                if name not in results:
+                    results[name] = []
                 try:
                     t = benchmark(fxn, params, baseline=baseline, name=name, number=5, verbose=False)
+                    results[name].append(t * 1000000)
                     timings.append("{:13.4f} us".format(t * 1000000))
                 except RuntimeError:
+                    results[name].append(np.inf)
                     timings.append("{:>16s}".format("recursion errror"))
             print "| " + " | ".join(timings) + " |"
 
+    import pylab as py
+    index = np.arange(len(benchmark_names))
+    bar_width = 0.7 / len(results)
+    colors = iter("brgy")
+    for i, (m, result) in enumerate(results.iteritems()):
+        py.bar(
+            index + bar_width * i, 
+            result, 
+            bar_width,
+            alpha = 0.4,
+            color = colors.next(),
+            log = True,
+            label = m,
+        )
 
+    py.xlim(xmax = index[-1] + bar_width * (i+1))
+    py.xlabel('Benchmark')
+    py.ylabel('Time (us)')
+    py.title('Benchmark of different tailcall optimization schemes')
+    py.xticks(index + bar_width, benchmark_names, rotation=70)
+    py.legend(loc='upper left')
+
+    py.tight_layout()
+    py.savefig("benchmark.png")
+    py.show()
+    
 
