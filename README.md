@@ -232,6 +232,8 @@ systems.  If you want to know more about _that_ aspect of the optimization, and
 other more rigorous methods of optimization, check out [High Performance
 Python][hpp].
 
+![](benchmark.png)
+
 
 [guido]: http://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html
 [rubber]: http://www.teamrubber.com/blog/python-tail-optimisation-using-byteplay/
